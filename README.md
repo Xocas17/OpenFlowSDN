@@ -7,6 +7,7 @@ The project requirements are as follows:
 
 
 First of all, it is necessary to set up the Mininet virtual machine properly.
+________________________________________________________________________________________
 
 # Mininet Setup
 In the first place, it is necessary to run dhclient, which sets the IP of all interfaces created on the virtual machine.
@@ -14,6 +15,7 @@ In the first place, it is necessary to run dhclient, which sets the IP of all in
 sudo dhclient
 ```
 We can use different PuTTy sessions to connect to the virtual machine. 
+________________________________________________________________________________________
 
 # Mininet Topology
 The topology implemented is as the following sketch:
