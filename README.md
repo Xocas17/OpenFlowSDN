@@ -21,7 +21,7 @@ The topology implemented is as the following sketch:
 
 <img src="images/topology.png" width="80%">
 
-## Source code of the topology and  its Description
+## Source code of the topology and its description
 In order to execute the topology script and create it on Mininet.
 ```
 sudo python topology.py
@@ -127,6 +127,36 @@ It is important to run the following command to clean up all the simulation envi
 ```
 sudo mn -c
 ```
+________________________________________________________________________________________
 # POX Controller
+I coded my own POX controller to fulfill the requirements of the project. 
+First of all, the controller must be created in the **pox/ext** directory. 
+```
+cd pox/ext
+```
+```
+geany controller.py
+```
 
+## Source code of the controller and its description
+In order to execute the controller, we must be in the **pox** directory.
+```
+cd pox
+```
+Then we can execute the controller
+```
+sudo python ./pox.py controller
+```
+### 1.Importing libraries
+In this section I imported the **libraries** needed to use  OpenFlow commands and instructions.
 
+I also imported other libraries which I used to implement some other processes that will explained.
+
+```python
+from pox.core import core
+import pox.openflow.libopenflow_01 as of
+from pox.openflow.flow_table import *
+from pox.lib.util import dpidToStr
+import os
+```
+### 2.
