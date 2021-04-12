@@ -4,7 +4,6 @@ from pox.openflow.flow_table import *
 from pox.lib.util import dpidToStr
 import os
 
-log = core.getLogger()
 s1_dpid = 0
 s2_dpid = 0
 s3_dpid = 0
