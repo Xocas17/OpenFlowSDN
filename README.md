@@ -18,6 +18,8 @@ We can use different PuTTy sessions to connect to the virtual machine.
 # Mininet Topology
 The topology implemented is as the following sketch:
 
-
-
 <img src="images/topology.png" width="80%">
+
+________________________________________________________________________________________
+
+
