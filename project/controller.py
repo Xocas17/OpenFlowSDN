@@ -97,13 +97,13 @@ def _handle_PacketIn (event):
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)
 		
+		add_sameNetworkFlows(event,"10.0.0.")
+		
 		add_flows(event,"10.0.0.","11.0.0.",1)
 		add_flows(event,"10.0.0.","12.0.0.",2)
 		
-		add_sameNetworkFlows(event,"10.0.0.")
-		
-		
 				
+					
 	elif event.connection.dpid==s2_dpid:
 		msg = of.ofp_flow_mod()
 		msg.idle_timeout = 0
