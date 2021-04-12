@@ -19,4 +19,5 @@ We can use different PuTTy sessions to connect to the virtual machine.
 The topology implemented is as the following sketch:
 
 
+
 <img src="images/topology.png" width="80%">
