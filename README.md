@@ -159,4 +159,5 @@ from pox.openflow.flow_table import *
 from pox.lib.util import dpidToStr
 import os
 ```
-### 2.
+### Program sequence
+#### 1. Switches connection up
