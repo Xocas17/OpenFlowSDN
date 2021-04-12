@@ -123,7 +123,7 @@ if __name__ == '__main__':
 
 ```
 
-It is important to run the following command to clean up all the simulation so we can start another one without having previous components or information not deleted.
+It is important to run the following command to clean up all the simulation environment so we can start another one without having previous components or information not deleted.
 ```
 sudo mn -c
 ```
