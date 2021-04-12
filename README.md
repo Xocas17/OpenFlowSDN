@@ -21,13 +21,13 @@ The topology implemented is as the following sketch:
 
 <img src="images/topology.png" width="80%">
 
-# Source code of the topology and  its Description
+## Source code of the topology and  its Description
 In order to execute the topology script and create it on Mininet.
 ```
 sudo python topology.py
 ```
 
-## 1.Importing libraries
+### 1.Importing libraries
 In this section I imported all the **libraries** needed to create the components of the topology above.
 
 ```python
@@ -38,12 +38,12 @@ from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.node import RemoteController
 ```
-## 2.Creating the Mininet instance
+### 2.Creating the Mininet instance
 Here I created a Mininet class object and as arguments I passed the type of links and switches, respectively.
 ```python
 net = Mininet( link=TCLink, switch=OVSKernelSwitch )
 ```
-## 3.Creating the hosts, switches and controller
+### 3.Creating the hosts, switches and controller
 The following lines show the creation of the 15 hosts of our topology, assigning each IP address, MAC address and their default route. Each host is named by the switch associated. 
 * Host 1 of switch 1: h1_s1
 * Host 4 of switch 3: h4_s3
@@ -85,7 +85,7 @@ s3 = net.addSwitch('s3')
 
 c1 = net.addController( 'c1', controller=RemoteController, ip='127.0.0.1', port=6633)
 ```
-## 4.Creating links
+### 4.Creating links
 The function of these instructions is to set the links among hosts and switches, I also passed the connected ports as an argument, this was necessary to clarify the right paths all over the networks.
 ```python
 net.addLink(h1_s1, s1,port1=1,port2=1)
@@ -106,7 +106,7 @@ net.addLink(h3_s3, s3,port1=1,port2=3)
 net.addLink(h4_s3, s3,port1=1,port2=4)
 net.addLink(h5_s3, s3,port1=1,port2=5)
 ```
-## 5.Starting the Mininet object and the Mininet CLI(Interface)
+### 5.Starting the Mininet object and the Mininet CLI(Interface)
 Once the **exit** command is sent in the CLI, the net.stop() command will be executed, stopping the simulation.
 ```python
 net.build()
@@ -114,7 +114,7 @@ net.start()
 CLI( net )
 net.stop()
 ```
-## 6.Set some parameters to display information.
+### 6.Set some parameters to display information.
 The **setLogLevel()** command will display more information about the components of the topology, showing all the components in the CLI, then the main topology function is called and executed.
 ```python
 if __name__ == '__main__':
@@ -127,4 +127,6 @@ It is important to run the following command to clean up all the simulation envi
 ```
 sudo mn -c
 ```
+# POX Controller
+
 
