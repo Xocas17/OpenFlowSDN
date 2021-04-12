@@ -3,7 +3,7 @@ Implementation of a full-mesh three switch topology, using a POX controller.
 
 The project requirements are as follows:
 
-<img src="images/requirements.png">
+<img src="images/requirements.png" width="80%">
 
 
 First of all, it is necessary to set up the Mininet virtual machine properly.
@@ -18,4 +18,4 @@ We can use different PuTTy sessions to connect to the virtual machine.
 # Mininet Topology
 The topology implemented is as the following sketch:
 
-<img src="images/requirements.png">
+<img src="images/topology.png" width="80%">
