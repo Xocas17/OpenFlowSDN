@@ -160,5 +160,5 @@ from pox.lib.util import dpidToStr
 import os
 ```
 ### Program sequence
-#### 1. Switches connection up
+### 1. Switches connection up
 
