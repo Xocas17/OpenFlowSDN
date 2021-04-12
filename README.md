@@ -1,3 +1,4 @@
 # OpenFlowSDN
-_Implementation of a full-mesh three switch topology, using a POX controller
-_The project requirements are as follows:
+Implementation of a full-mesh three switch topology, using a POX controller
+
+The project requirements are as follows:
