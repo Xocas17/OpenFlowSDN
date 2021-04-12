@@ -37,7 +37,6 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.node import RemoteController
-import os
 ```
 ## 2.Creating the Mininet instance
 Here I created a Mininet class object and as arguments I passed the type of links and switches, respectively.
