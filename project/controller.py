@@ -2,10 +2,6 @@ from pox.core import core
 import pox.openflow.libopenflow_01 as of
 from pox.openflow.flow_table import *
 from pox.lib.util import dpidToStr
-from pox.lib.packet.ipv4 import ipv4
-from pox.lib.packet.arp import arp
-from pox.lib.packet.icmp import icmp
-import pox.lib.packet as pkt
 import os
 
 log = core.getLogger()
