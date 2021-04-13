@@ -360,4 +360,7 @@ Finally, the flow is installed by sending the message to the respective switch.
 ________________________________________________________________________________________
 # Testing the project
 In this section, I am going to explain step by step how to test the project properly, checking that the requirements were met.
-##
+## Running the controller
+First you need to the place the controller in the directory "pox/ext", afterwards you need to go to "pox" directory and execute the following command.
+<img src="images/runcontroller.png" width="80%">
+
