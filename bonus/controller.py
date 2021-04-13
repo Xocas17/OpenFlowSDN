@@ -27,8 +27,6 @@ def _handle_ConnectionUp(event):
 		global s1_dpid, s2_dpid, s3_dpid
 		print("ConnectionUp: ", dpidToStr(event.connection.dpid))
 	    
-
-    # remember the connection dpid for switch
 		for m in event.connection.features.ports:
 			if m.name == "s1-eth1":
 				s1_dpid = event.connection.dpid
@@ -84,7 +82,6 @@ def add_sameNetworkFlows(ev,ipdst):
 			msg.actions.append(of.ofp_action_output(port = i))
 			ev.connection.send(msg)
 def add_queues(port):
-	print("Entrasss")
 	command = 'ovs-vsctl set port '+port+' qos=@newqos -- \
 --id=@newqos create QoS type=linux-htb  \
  other-config:max-rate=100000000 \
@@ -93,9 +90,8 @@ def add_queues(port):
  queues:3=@3 -- \
 --id=@1 create queue other-config:min-rate=1000000 other-config:max-rate=1000000 -- \
 --id=@2 create queue other-config:min-rate=2000000 other-config:max-rate=2000000 -- \
---id=@3 create queue other-config:min-rate=3000000 other-config:max-rate=3000000'
-	print(command)
-	print(os.system(command))  
+--id=@3 create queue other-config:min-rate=3000000 other-config:max-rate=3000000 > /dev/null'
+	os.system(command) 
 		
           
 def _handle_PacketIn (event):
