@@ -368,10 +368,11 @@ First you need to the place the controller in the directory "pox/ext", afterward
 The controller now is listening for new switch connections and new packets.
 
 ## Running the topology
+In another terminal, use the following command:
 <img src="images/runtopology.png">
 
 ## Checking queues created
-As I explained before, once the switches established a connection, the output queues are created. We can use the following the following command to check the output queues for instance in the port 6 of the switch 1:
+As I explained before, once the switches established a connection, the output queues are created. In another terminal, we can use the following the following command to check the output queues for instance in the port 6 of the switch 1:
 ```
 tc class list dev s1-eth6
 ```
@@ -383,3 +384,27 @@ We can see that the link bandwitdh is 100MBps (third line) and following that, t
 * 3Mbit queue
 
 The first one, despite it is necessarily created, it is not used in the project.
+
+## Pinging all
+In order to measure the reachability of the controller, I am going to run on the mininet CLI the command **pingall**.
+
+<img src="images/pingall.png">
+
+As you can see, every host can connect with each other all over the network.
+
+## Checking flow table rules
+After pinging, we can use the following command in another terminal to check the rules created by the controller. 
+
+<img src="images/flows.png">
+
+As i explained before, there are **5 rules** for the hosts of the same switch or LAN, and **10 rules** for the other hosts from the other LANs , + **1** for the **ARP** protocol.
+
+## Measuring traffic
+One of the requirements of the project was to have a programmable bandwith for 3 output queues, it can be tested using the **iperf** command as the following image:
+
+<img src="images/trafic.png">
+
+It **doesn´t matter the source** of the packets but their **destination**. As long as the IP dst host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**
+
+
+
