@@ -31,17 +31,17 @@ def _handle_ConnectionUp(event):
              
 def add_flows(ev,ipsrc,ipdst,n):
 	inport=0
-	if str(ipsrc).rsplit('.',1)[0]=="10.0.0" and str(ipdst).rsplit('.',1)[0]=="11.0.0":
+	if 	 ipsrc=="10.0.0." and ipdst=="11.0.0.":
 		inport=6
-	elif str(ipsrc).rsplit('.',1)[0]=="10.0.0" and str(ipdst).rsplit('.',1)[0]=="12.0.0":
+	elif ipsrc=="10.0.0." and ipdst=="12.0.0.":
 		inport=7
-	elif str(ipsrc).rsplit('.',1)[0]=="11.0.0" and str(ipdst).rsplit('.',1)[0]=="10.0.0":
+	elif ipsrc=="11.0.0." and ipdst=="10.0.0.":
 		inport=6
-	elif str(ipsrc).rsplit('.',1)[0]=="11.0.0" and str(ipdst).rsplit('.',1)[0]=="12.0.0":
+	elif ipsrc=="11.0.0." and ipdst=="12.0.0.":
 		inport=7
-	elif str(ipsrc).rsplit('.',1)[0]=="12.0.0" and str(ipdst).rsplit('.',1)[0]=="10.0.0":
+	elif ipsrc=="12.0.0." and ipdst=="10.0.0.":
 		inport=6
-	elif str(ipsrc).rsplit('.',1)[0]=="12.0.0" and str(ipdst).rsplit('.',1)[0]=="11.0.0":
+	elif ipsrc=="12.0.0." and ipdst=="11.0.0.":
 		inport=7
 		
 	for j in range(1,6):
