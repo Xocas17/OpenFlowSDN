@@ -53,7 +53,7 @@ There are 3 LANs, one for each switch:
 * **Switch 2** and its hosts: **11.0.0.0/8**
 * **Switch 3** and its hosts: **12.0.0.0/8**
 
-There is also a pattern concerning the MAC addresses---> The least significant bit of the last byte is the **host number**, and the most significant bit of the last byte is an **enumeration** from 0 to 2. 
+There is also a pattern concerning the MAC addresses---> The 4 least significant bits of the last byte are the **host number**, and the 4 most significant bits of the last byte  an **enumeration** from 0 to 2. 
 
 This is helpful to identify in a more simple way the corresponding MAC addresses.
 
@@ -325,7 +325,7 @@ inport=0
 ```
 
 Here I am using a for loop very similar to the one in the **add_sameNetworkFlows(ev,ipdst)** function. 
-* First difference: I am using the loop index and the "n" parameter to assign the IPs an the MAC addresses. If you remember the topology, the most significative bit of the last byte of S1 hosts start by **0**, for s2 by **1**, for s3 by **2**, e.g:
+* First difference: I am using the loop index and the "n" parameter to assign the IPs an the MAC addresses. If you remember the topology, the 4 most significant bits of the last byte of S1 hosts are **0**, for s2 **1**, for s3 **2**, e.g:
     * h1_s1--->"00:00:00:00:00:**0**1"
     * h1_s2--->"00:00:00:00:00:**1**1"
     * h5_s3--->"00:00:00:00:00:**2**5"
