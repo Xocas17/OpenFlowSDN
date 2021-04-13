@@ -325,8 +325,12 @@ inport=0
 ```
 
 Here I am using a for loop very similar to the one in the **add_sameNetworkFlows(ev,ipdst)** function. 
-* First difference: I am using the loop index and the n parameter to assign the IPs an the MAC addresses. If you remember the topology, the most significative bit of the last byte of S1 hosts start by **0**, for s2 by **1**, for s3 by **3**. e.g:
-    * h1_s1:"00:00:00:00:00:**0**1", h1_s2:"00:00:00:00:00:**1**1", h1_s3
+* First difference: I am using the loop index and the n parameter to assign the IPs an the MAC addresses. If you remember the topology, the most significative bit of the last byte of S1 hosts start by **0**, for s2 by **1**, for s3 by **2**. e.g:
+    * h1_s1--->"00:00:00:00:00:**0**1"
+    * h1_s2--->"00:00:00:00:00:**1**1"
+    * h5_s3--->"00:00:00:00:00:**2**5"
+
+	
 
 ```python
 	for j in range(1,6):
