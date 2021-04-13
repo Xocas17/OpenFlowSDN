@@ -86,7 +86,7 @@ s3 = net.addSwitch('s3')
 c1 = net.addController( 'c1', controller=RemoteController, ip='127.0.0.1', port=6633)
 ```
 ### 4.Creating links
-The function of these instructions is to set the links among hosts and switches, I also passed the connected ports as an argument, this was necessary to clarify the right paths all over the networks.
+The function of these instructions is to set the links among hosts and switches, I also passed the ports to be connected as an argument, this was necessary to clarify the right paths all over the network.
 ```python
 net.addLink(h1_s1, s1,port1=1,port2=1)
 net.addLink(h2_s1, s1,port1=1,port2=2)
