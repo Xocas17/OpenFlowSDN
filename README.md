@@ -205,10 +205,10 @@ def _handle_ConnectionUp(event):
 Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then since there is no option with OpenFlow 1.0 version to create queues, I used the OS module to run the command from the controller.
 
 Concerning the output queues:
-* First of all, I set the link among switches as max. 100MBps links---> **other-config:max-rate=100000000**
-* The first queue, uses a bandwith of 1 MBit --->**create queue other-config:min-rate=1000000 other-config:max-rate=1000000**
-* The second queue, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
-* The third queue, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
+* First of all, I set the **link** among **switches** as max. **100MBps links**---> **other-config:max-rate=100000000**
+* The **first queue**, uses a bandwith of 1 MBit --->**create queue other-config:min-rate=1000000 other-config:max-rate=1000000**
+* The **second queue**, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
+* The **third queue**, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
 
 Finally, I run this command using **os.system(command)**
 ```python
@@ -231,9 +231,9 @@ After the switches are properly connected to the controller, the next step is to
 I get the packet data by using **event.parsed** and I also assign the global type to switch Datapath IDs variables so I can access them from these function.
 
 There are 3 IF conditions:
-* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch1
-* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch2
-* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch3
+* First one: **if event.connection.dpid==s1_dpid:** ---> If the event is on switch1
+* Second one: **if event.connection.dpid==s2_dpid:** ---> If the event is on switch2
+* Third one: **if event.connection.dpid==s3_dpid:** ---> If the event is on switch3
 
 The content is the same in the 3 conditions. 
 * First, we set the type of operation, in this case **ofp_flow_mod()**, this is used to set flow entries in the flow tables of the switches. Then I set the **hard timeout** as 30 sec. In the next line, i specify the protocol code, in this case 0x0806 **ARP** and then the flow will be set in the switch using the instruction **(of.ofp_action_output(port = of.OFPP_ALL))**, finally with **event.connection.send(msg)** the flow is sent to the switch. This is necessary to get the reachability through all the 3 networks.
@@ -355,3 +355,9 @@ Here I am using a for loop very similar to the one in the **add_sameNetworkFlows
 		ev.connection.send(msg)
 ```
 			
+Finally, the flow is installed by sending the message to the respective switch.
+
+________________________________________________________________________________________
+# Testing the project
+In this section, I am going to explain the steps to test the project properly, checking that the requirements were met.
+##
