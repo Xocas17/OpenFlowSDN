@@ -63,9 +63,7 @@ def add_flows(ev,ipsrc,ipdst,n):
 def add_sameNetworkFlows(ev,ipdst):
 	for i in range(1,6):
 			msg = of.ofp_flow_mod()
-			msg.priority =1
-			msg.idle_timeout = 0
-			msg.hard_timeout = 0
+			msg.hard_timeout = 30
 			msg.match.dl_type = 0x0800
 			myipdst=ipdst+str(i)
 			msg.match.nw_dst = myipdst
