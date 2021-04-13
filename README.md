@@ -210,7 +210,7 @@ Concerning the output queues:
 * The **second queue**, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
 * The **third queue**, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
 
-Finally, I run this command using **os.system(command)**
+Finally, I run this command using **os.system(command)** and include the **> /dev/null** instruction to avoid the display of the command output.
 ```python
 def add_queues(port):
 	command = 'ovs-vsctl set port '+port+' qos=@newqos -- \
@@ -376,3 +376,9 @@ As I explained before, once the switches established a connection, the output qu
 tc class list dev s1-eth6
 ```
 <img src="images/listqueues.png">
+
+We can see that the link bandwitdh is 100MBps (third line) and following that, there are 3 output queues:
+* 1Mbit queue
+* 2Mbit queue
+* 3Mbit queue
+The other one, despite it is necessarily created, it is not used in the project.
