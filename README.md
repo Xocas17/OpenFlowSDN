@@ -306,6 +306,7 @@ def add_sameNetworkFlows(ev,ipdst):
 ```
 #### add_Flows(ev,ipsrc,ipdst,n):
 The functionailty of this block is to decide which port has to be set to reach another switch network. For instance if we want to add the flow rules to communicate from the LAN 10.0.0.0 to the LAN 11.0.0.0, the chosen port will be the s1-eth6, as this is the one connecting S1 and S2, and so on with all the LANs.
+
 ```python
 def add_flows(ev,ipsrc,ipdst,n):
 inport=0
@@ -321,8 +322,9 @@ inport=0
 		inport=6
 	elif ipsrc=="12.0.0." and ipdst=="11.0.0.":
 		inport=7
-```	
-Here I am doing
+```
+
+Here I am using a for loop very similar to the one inside the [add_sameNetworkFlows(ev,ipdst)](###add_sameNetworkFlows)
 
 ```python
 	for j in range(1,6):
