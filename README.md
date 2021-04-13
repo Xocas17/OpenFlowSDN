@@ -411,5 +411,63 @@ Whenever a topology ends, we always need to run **sudo mn -c** to clean the envi
 
 <img src="images/finish.png">
 
+# BONUS: Dynamic routing considering same LAN
+As a bonus work, I also implemented a project that unlike the main project, this just uses 1 LAN and it sets the flows dynamically.
 
+```python
+def _handle_PacketIn (event):
+	packet = event.parsed
+	ipp=packet.find("ipv4")
+	
+	if(isinstance(packet.next,ipv4)):
+		add_flow(event,packet.next.srcip,packet.next.dstip)
+		
+```
+
+This is the main difference from the main project, I analize the packet incoming, if it is an IPV4 packet, I get its source and destination IP address and then I just call the function add_flow, assigning these addreses to the msg, installing like this, **just 1** inter-switch rule in the respective switch.
+```python
+def add_flow(ev,ipsrc,ipdst):
+	inport=0
+
+	if str(ipsrc).rsplit('.',1)[0]=="10.0.0" and str(ipdst).rsplit('.',1)[0]=="10.0.1":
+		inport=6
+	elif str(ipsrc).rsplit('.',1)[0]=="10.0.0" and str(ipdst).rsplit('.',1)[0]=="10.0.2":
+		inport=7
+	elif str(ipsrc).rsplit('.',1)[0]=="10.0.1" and str(ipdst).rsplit('.',1)[0]=="10.0.0":
+		inport=6
+	elif str(ipsrc).rsplit('.',1)[0]=="10.0.1" and str(ipdst).rsplit('.',1)[0]=="10.0.2":
+		inport=7
+	elif str(ipsrc).rsplit('.',1)[0]=="10.0.2" and str(ipdst).rsplit('.',1)[0]=="10.0.0":
+		inport=6
+	elif str(ipsrc).rsplit('.',1)[0]=="10.0.2" and str(ipdst).rsplit('.',1)[0]=="10.0.1":
+		inport=7
+		
+	
+	msg = of.ofp_flow_mod()
+	msg.idle_timeout = 0
+	msg.hard_timeout = 0
+	msg.match.dl_type = 0x0800
+	msg.match.nw_src = ipsrc
+	msg.match.nw_dst = ipdst
+	
+	if str(ipdst).rsplit('.',1)[1]=="1" or str(ipdst).rsplit('.',1)[1]=="2":
+		msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=1))
+	elif str(ipdst).rsplit('.',1)[1]=="3" or str(ipdst).rsplit('.',1)[1]=="4":
+		msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=2))
+	elif str(ipdst).rsplit('.',1)[1]=="5":
+		msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=3))
+		
+	ev.connection.send(msg)
+			
+```
+
+## Pinging in order to set the rule 
+
+<img src="images/bonusping.png">
+
+## Checking flow table
+
+<img src="images/bonusflows.png">
+
+As you can see, beside the rules for same switch hosts and the ARP rule, there is just 1 rule created specifically for the hosts that were involved in the ping instruction.
 
