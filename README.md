@@ -471,3 +471,6 @@ def add_flow(ev,ipsrc,ipdst):
 
 As you can see, beside the rules for same switch hosts and the ARP rule, there is just 1 rule created specifically for the hosts that were involved in the ping instruction.
 
+## Bonus summary
+
+In summary, this bonus project works in the same way than the main one(same bandwith management, same output queues...). The only difference is that all the switches are in the same LAN and the controller sets the flow rules dynamically, not in a row.
