@@ -402,7 +402,7 @@ As i explained before, there are **5 rules** for the hosts of the same switch or
 ## Measuring traffic
 One of the requirements of the project was to have a programmable bandwith for 3 output queues, it can be tested using the **iperf** command as the following image:
 
-<img src="images/trafic.png">
+<img src="images/traffic.png">
 
 It **doesn´t matter the source** of the packets but their **destination**. As long as the IP dst host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**
 
