@@ -381,4 +381,5 @@ We can see that the link bandwitdh is 100MBps (third line) and following that, t
 * 1Mbit queue
 * 2Mbit queue
 * 3Mbit queue
-The other one, despite it is necessarily created, it is not used in the project.
+
+The first one, despite it is necessarily created, it is not used in the project.
