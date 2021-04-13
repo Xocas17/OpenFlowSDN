@@ -200,6 +200,7 @@ Concerning the output queues:
 * The first queue, uses a bandwith of 1 MBit --->**create queue other-config:min-rate=1000000 other-config:max-rate=1000000**
 * The second queue, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
 * The third queue, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
+* 
 Finally, I run this command using **os.system(command)**
 ```python
 def add_queues(port):
