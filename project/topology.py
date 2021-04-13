@@ -4,7 +4,6 @@ from mininet.link import TCLink
 from mininet.cli import CLI
 from mininet.log import setLogLevel
 from mininet.node import RemoteController
-import os
 
 def topology():
 	
