@@ -161,4 +161,57 @@ import os
 ```
 ### Program sequence
 ### 1. Switches connection up
+Once the controller starts, it waits until the topology is started. When the topology starts, the first function executed is the one below:**handleConnectionUp(event)**.
 
+The function waits for the switches to get started, when they start, the controller will print "Connection up: switch Datapath ID", establishing a connection between the switches and the controller.
+
+ 
+
+```python
+s1_dpid = 0
+s2_dpid = 0
+s3_dpid = 0
+
+def _handle_ConnectionUp(event):
+	
+		global s1_dpid, s2_dpid, s3_dpid
+		print("ConnectionUp: ", dpidToStr(event.connection.dpid))
+		
+		add_queues("s1-eth7")
+		add_queues("s1-eth6")
+		add_queues("s2-eth7")
+		add_queues("s2-eth6")
+		add_queues("s3-eth7")
+		add_queues("s3-eth6")
+
+		for m in event.connection.features.ports:
+			if m.name == "s1-eth1":
+				s1_dpid = event.connection.dpid
+			elif m.name == "s2-eth1":
+				s2_dpid = event.connection.dpid
+			elif m.name == "s3-eth1":
+				s3_dpid = event.connection.dpid
+            
+```
+Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then I use the OS module to run the command from the controller.
+
+Concerning the output queues:
+* First of all, I set the link among switches as max. 100MBps links---> **other-config:max-rate=100000000**
+* The first queue, uses a bandwith of 1 MBit --->**create queue other-config:min-rate=1000000 other-config:max-rate=1000000**
+* The second queue, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
+* The third queue, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
+Finally, I run this command using **os.system(command)**
+```python
+def add_queues(port):
+	command = 'ovs-vsctl set port '+port+' qos=@newqos -- \
+--id=@newqos create QoS type=linux-htb  \
+ other-config:max-rate=100000000 \
+ queues:1=@1\
+ queues:2=@2 \
+ queues:3=@3 -- \
+--id=@1 create queue other-config:min-rate=1000000 other-config:max-rate=1000000 -- \
+--id=@2 create queue other-config:min-rate=2000000 other-config:max-rate=2000000 -- \
+--id=@3 create queue other-config:min-rate=3000000 other-config:max-rate=3000000 > /dev/null'
+	os.system(command)
+
+```
