@@ -160,14 +160,23 @@ from pox.lib.util import dpidToStr
 import os
 ```
 ### Program sequence
-### 1. Switches connection up
-Once the controller starts, it waits until the topology is started. When the topology starts, the first function executed is the one below:**handleConnectionUp(event)**.
+### 1. Start listeners 
+Once the controller starts, the **launch()** function is executed, adding 2 listeners, the first one waiting for switch connections and the second one waiting for incoming packets.
 
-The function waits for the switches to get started, when they start, the controller will print "Connection up: switch Datapath ID", establishing a connection between the switches and the controller.
-
+ ```python
+def launch ():
+	core.openflow.addListenerByName("ConnectionUp", _handle_ConnectionUp)
+	core.openflow.addListenerByName("PacketIn", _handle_PacketIn)
+ ```
  
+### 1. Switches connection up
+Once thethe topology is started, the first function executed is the one below:**handleConnectionUp(event)**.
 
-```python
+The function waits for the switches to get started, when they start, the controller will print "Connection up: switch Datapath ID", establishing a connection between the switches and the controller. 
+
+It also assigns to the variables **s1_dpid, s2_dpid and s3_dpid** the real DPID of the switches in order to work with it later.
+
+ ```python
 s1_dpid = 0
 s2_dpid = 0
 s3_dpid = 0
@@ -215,4 +224,54 @@ def add_queues(port):
 --id=@3 create queue other-config:min-rate=3000000 other-config:max-rate=3000000 > /dev/null'
 	os.system(command)
 
+```
+### 2. Reception of a packet
+
+```python
+def _handle_PacketIn (event):
+	packet = event.parsed
+	global s1_dpid, s2_dpid, s3_dpid
+	
+	if event.connection.dpid==s1_dpid:
+		msg = of.ofp_flow_mod()
+		msg.idle_timeout = 0
+		msg.hard_timeout = 0
+		msg.match.dl_type = 0x0806
+		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
+		event.connection.send(msg)
+		
+		add_sameNetworkFlows(event,"10.0.0.")
+		
+		add_flows(event,"10.0.0.","11.0.0.",1)
+		add_flows(event,"10.0.0.","12.0.0.",2)
+		
+				
+					
+	elif event.connection.dpid==s2_dpid:
+		msg = of.ofp_flow_mod()
+		msg.idle_timeout = 0
+		msg.hard_timeout = 0
+		msg.match.dl_type = 0x0806
+		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
+		event.connection.send(msg)	
+		
+		add_sameNetworkFlows(event,"11.0.0.")
+		
+		add_flows(event,"11.0.0.","10.0.0.",0)
+		add_flows(event,"11.0.0.","12.0.0.",2)
+		
+		
+		
+	elif event.connection.dpid==s3_dpid:
+		msg = of.ofp_flow_mod()
+		msg.idle_timeout = 0
+		msg.hard_timeout = 0
+		msg.match.dl_type = 0x0806
+		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
+		event.connection.send(msg)
+		
+		add_sameNetworkFlows(event,"12.0.0.")
+		
+		add_flows(event,"12.0.0.","10.0.0.",0)
+		add_flows(event,"12.0.0.","11.0.0.",1)
 ```
