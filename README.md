@@ -369,3 +369,10 @@ The controller now is listening for new switch connections and new packets.
 
 ## Running the topology
 <img src="images/runtopology.png">
+
+## Checking queues created
+As I explained before, once the switches established a connection, the output queues are created. We can use the following the following command to check the output queues for instance in the port 6 of the switch 1:
+```
+tc class list dev s1-eth6
+```
+<img src="images/listqueues.png">
