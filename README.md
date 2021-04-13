@@ -169,7 +169,7 @@ def launch ():
 	core.openflow.addListenerByName("PacketIn", _handle_PacketIn)
  ```
  
-### 1. Switches connection up
+### 2. Switches connection up
 Once thethe topology is started, the first function executed is the one below:**handleConnectionUp(event)**.
 
 The function waits for the switches to get started, when they start, the controller will print "Connection up: switch Datapath ID", establishing a connection between the switches and the controller. 
@@ -225,7 +225,20 @@ def add_queues(port):
 	os.system(command)
 
 ```
-### 2. Reception of a packet
+### 3. Reception of a packet
+After the switches are properly connected to the controller, the next step is to wait until a **packet** arrives to any of the switches. 
+
+I get the packet data by using **event.parsed** and I also assign the global type to switch Datapath IDs variables so I can access them from these function.
+
+There are 3 IF conditions:
+* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch1
+* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch2
+* First one: **if event.connection.dpid==s1_dpid:** ---> If the packet arrives to switch3
+
+The content is the same in the 3 conditions. 
+* First, we set the type of operation, in this case **ofp_flow_mod()**, this is used to set flow entries in the flow tables of the switches. Then I set the **hard timeout** as 30 sec. In the next line, i specify the protocol code, in this case 0x0806 **ARP** and then the flow will be set in the switch using the instruction **(of.ofp_action_output(port = of.OFPP_ALL))**, finally with **event.connection.send(msg)** the flow is sent to the switch. This is necessary to get the reachability through all the 3 networks.
+* Then, I call a function called **add_ sameNetworkFlows(event, ip)**. Explanation below this code.
+* After setting all the flows inside the networks, it is time to set them between different LANs. I call twice the function add_flows, for instance for the S1 condition, the first call is to set the flows between S1 network (10.0.0.0) and the S2 network (11.0.0.0), and the second one is to set the flows between S1 network and S3 network. I also pass a third argument responsible to set the destination MAC addresses properly. Explanation below.
 
 ```python
 def _handle_PacketIn (event):
@@ -234,8 +247,7 @@ def _handle_PacketIn (event):
 	
 	if event.connection.dpid==s1_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)
@@ -249,8 +261,7 @@ def _handle_PacketIn (event):
 					
 	elif event.connection.dpid==s2_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)	
@@ -264,8 +275,7 @@ def _handle_PacketIn (event):
 		
 	elif event.connection.dpid==s3_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)
@@ -275,3 +285,60 @@ def _handle_PacketIn (event):
 		add_flows(event,"12.0.0.","10.0.0.",0)
 		add_flows(event,"12.0.0.","11.0.0.",1)
 ```
+#### add_sameNetworkFlows(ev,ipdst):
+This functions has 2 arguments, the first one the event and the second one the destination IP, what I do here is to **set the flows** in the respective switch in order to reach **the hosts** of the **same switch** or network. Since the switch port number matches the last byte of the IP destination, I used a for loop, specified the hard timeout and the IP code:0x0800.
+
+Example:
+* add_sameNetworkFlows(event,"10.0.0.")--> This is the root address of the switch1, called from the switch1 condition.
+* from 1 to 5 , I set the **myipdst** variable as a string concatenation between  the root address(10.0.0.) and the i number,don´t forget to assign it to the msg IP destination **msg.match.nw_dst** so it would fill the 5 IPs, 10.0.0.1 to the port 1, 10.0.0.2 to the port 2 ..... 10.0.0.5 to the port 5.
+* Finnally, the flow is installed in the switch with **ev.connection.send(msg)** 
+
+```python
+def add_sameNetworkFlows(ev,ipdst):
+	for i in range(1,6):
+			msg = of.ofp_flow_mod()
+			msg.hard_timeout = 30
+			msg.match.dl_type = 0x0800
+			myipdst=ipdst+str(i)
+			msg.match.nw_dst = myipdst
+			msg.actions.append(of.ofp_action_output(port = i))
+			ev.connection.send(msg)
+```
+#### add_Flows(ev,ipsrc,ipdst,n):
+The functionailty of this block is to decide which port has to be set to reach another switch network. For instance if we want to add the flow rules to communicate from the LAN 10.0.0.0 to the LAN 11.0.0.0, the chosen port will be the s1-eth6, as this is the one connecting S1 and S2, and so on with all the LANs.
+```python
+def add_flows(ev,ipsrc,ipdst,n):
+inport=0
+	if   ipsrc=="10.0.0." and ipdst=="11.0.0.":
+		inport=6
+	elif ipsrc=="10.0.0." and ipdst=="12.0.0.":
+		inport=7
+	elif ipsrc=="11.0.0." and ipdst=="10.0.0.":
+		inport=6
+	elif ipsrc=="11.0.0." and ipdst=="12.0.0.":
+		inport=7
+	elif ipsrc=="12.0.0." and ipdst=="10.0.0.":
+		inport=6
+	elif ipsrc=="12.0.0." and ipdst=="11.0.0.":
+		inport=7
+```	
+Here I am doing
+
+```python
+	for j in range(1,6):
+		msg = of.ofp_flow_mod()
+		msg.match.dl_type = 0x0800
+		myipdst=ipdst + str(j)
+		msg.match.nw_dst = myipdst
+		msg.actions.append(of.ofp_action_dl_addr.set_dst(EthAddr("00:00:00:00:00:"+str(n)+str(j))))
+		
+		if str(myipdst).rsplit('.',1)[1]=="1" or str(myipdst).rsplit('.',1)[1]=="2":
+			msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=1))
+		elif str(myipdst).rsplit('.',1)[1]=="3" or str(myipdst).rsplit('.',1)[1]=="4":
+			msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=2))
+		elif str(myipdst).rsplit('.',1)[1]=="5":
+			msg.actions.append(of.ofp_action_enqueue(port = inport,queue_id=3))
+			
+		ev.connection.send(msg)
+```
+			
