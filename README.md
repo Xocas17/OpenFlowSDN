@@ -193,14 +193,14 @@ def _handle_ConnectionUp(event):
 				s3_dpid = event.connection.dpid
             
 ```
-Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then I use the OS module to run the command from the controller.
+Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then since there is no option with OpenFlow 1.0 version to create queues, I used the OS module to run the command from the controller.
 
 Concerning the output queues:
 * First of all, I set the link among switches as max. 100MBps links---> **other-config:max-rate=100000000**
 * The first queue, uses a bandwith of 1 MBit --->**create queue other-config:min-rate=1000000 other-config:max-rate=1000000**
 * The second queue, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
 * The third queue, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
-* 
+
 Finally, I run this command using **os.system(command)**
 ```python
 def add_queues(port):
