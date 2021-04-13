@@ -91,8 +91,7 @@ def _handle_PacketIn (event):
 	
 	if event.connection.dpid==s1_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)
@@ -106,8 +105,7 @@ def _handle_PacketIn (event):
 					
 	elif event.connection.dpid==s2_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)	
@@ -121,8 +119,7 @@ def _handle_PacketIn (event):
 		
 	elif event.connection.dpid==s3_dpid:
 		msg = of.ofp_flow_mod()
-		msg.idle_timeout = 0
-		msg.hard_timeout = 0
+		msg.hard_timeout = 30
 		msg.match.dl_type = 0x0806
 		msg.actions.append(of.ofp_action_output(port = of.OFPP_ALL))
 		event.connection.send(msg)
