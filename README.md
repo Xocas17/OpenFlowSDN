@@ -359,5 +359,5 @@ Finally, the flow is installed by sending the message to the respective switch.
 
 ________________________________________________________________________________________
 # Testing the project
-In this section, I am going to explain the steps to test the project properly, checking that the requirements were met.
+In this section, I am going to explain step by step how to test the project properly, checking that the requirements were met.
 ##
