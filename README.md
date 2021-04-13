@@ -325,12 +325,17 @@ inport=0
 ```
 
 Here I am using a for loop very similar to the one in the **add_sameNetworkFlows(ev,ipdst)** function. 
-* First difference: I am using the loop index and the n parameter to assign the IPs an the MAC addresses. If you remember the topology, the most significative bit of the last byte of S1 hosts start by **0**, for s2 by **1**, for s3 by **2**. e.g:
+* First difference: I am using the loop index and the n parameter to assign the IPs an the MAC addresses. If you remember the topology, the most significative bit of the last byte of S1 hosts start by **0**, for s2 by **1**, for s3 by **2**, e.g:
     * h1_s1--->"00:00:00:00:00:**0**1"
     * h1_s2--->"00:00:00:00:00:**1**1"
     * h5_s3--->"00:00:00:00:00:**2**5"
-
-	
+  
+* Then I assign the IP bit exactly like in the function **add_sameNetworkFlows(ev,ipdst)**, h1_s1 ---> j=1, h4_s2 --->j=4 ...
+* **msg.actions.append(of.ofp_action_dl_addr.set_dst(EthAddr("00:00:00:00:00:"+str(n)+str(j))))** ---> I modify the destination MAC address in order to **be able to communicate among 3 LANs**,e.g: ipdst:11.0.0.3 , Every time that a packet arrives having 11.0.0.3 as a destination IP, the MAC address destination will be **modified** by the one which is inside the function **set_dst**. 
+* Second difference: Here I do not use **of.ofp_action_output(port)**, instead I use **ofp_action_enqueue(port,queue_id)** in order to assign the rule to the 3 different output queues which I created previously.
+    * If the destination host is the **host1** or **host2** ---> All the packets destined to h1 or h2 will go through the port chosen previously and through the **queue** id **1**.(1Mbit)
+    * If the destination host is the host3 or host4 ---> All the packets destined to h3 or h4 will go through the port chosen previously and through the **queue** id **2**.(2Mbit)
+    * If the destination host is the host5 ---> All the packets destined to h5 will go through the port chosen previously and through the **queue** id **3**.(3Mbit)
 
 ```python
 	for j in range(1,6):
