@@ -150,7 +150,7 @@ sudo python ./pox.py controller
 ### 1.Importing libraries
 In this section I imported the **libraries** needed to use  OpenFlow commands and instructions.
 
-I also imported other libraries which I used to implement some other processes that will explained.
+I also imported other libraries which I used to implement some other processes that will be explained.
 
 ```python
 from pox.core import core
@@ -161,7 +161,7 @@ import os
 ```
 ### Program sequence
 ### 1. Start listeners 
-Once the controller starts, the **launch()** function is executed, adding 2 listeners, the first one waiting for switch connections and the second one waiting for incoming packets.
+Once the controller starts, the **launch()** function is executed, adding 2 listeners, the first one waiting for incoming switch connections and the second one waiting for incoming packets.
 
  ```python
 def launch ():
@@ -170,7 +170,7 @@ def launch ():
  ```
  
 ### 2. Switches connection up
-Once thethe topology is started, the first function executed is the one below:**handleConnectionUp(event)**.
+Once the topology is started, the first function executed is the one below:**handleConnectionUp(event)**.
 
 The function waits for the switches to get started, when they start, the controller will print "Connection up: switch Datapath ID", establishing a connection between the switches and the controller. 
 
@@ -202,7 +202,7 @@ def _handle_ConnectionUp(event):
 				s3_dpid = event.connection.dpid
             
 ```
-Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then since there is no option with OpenFlow 1.0 version to create queues, I used the OS module to run the command from the controller.
+Futhermore, I have also included in this function the creation of the output queues, so they are created and set before all the process. I pass the switch port as an argument and then since there is no option with OpenFlow 1.0 version to create queues, I used the OS module to run a ovs-vsctl command from the controller.
 
 Concerning the output queues:
 * First of all, I set the **link** among **switches** as max. **100MBps links**---> **other-config:max-rate=100000000**
@@ -210,7 +210,7 @@ Concerning the output queues:
 * The **second queue**, uses a bandwith of 2 MBit --->**create queue other-config:min-rate=2000000 other-config:max-rate=2000000**
 * The **third queue**, uses a bandwith of 3 MBit --->**create queue other-config:min-rate=3000000 other-config:max-rate=3000000**
 
-Finally, I run this command using **os.system(command)** and include the **> /dev/null** instruction to avoid the display of the command output.
+Finally, I run this command using **os.system(command)** including the **> /dev/null** instruction to avoid displaying the command output.
 ```python
 def add_queues(port):
 	command = 'ovs-vsctl set port '+port+' qos=@newqos -- \
@@ -236,9 +236,9 @@ There are 3 IF conditions:
 * Third one: **if event.connection.dpid==s3_dpid:** ---> If the event is on switch3
 
 The content is the same in the 3 conditions. 
-* First, we set the type of operation, in this case **ofp_flow_mod()**, this is used to set flow entries in the flow tables of the switches. Then I set the **hard timeout** as 30 sec. In the next line, i specify the protocol code, in this case 0x0806 **ARP** and then the flow will be set in the switch using the instruction **(of.ofp_action_output(port = of.OFPP_ALL))**, finally with **event.connection.send(msg)** the flow is sent to the switch. This is necessary to get the reachability through all the 3 networks.
+* First, we set the operation type, in this case **ofp_flow_mod()**, this is used to set flow rules in the flow table of the switches. Then I set the **hard timeout** as 30 sec. In the next line, i specify the protocol code, in this case 0x0806 **ARP** and then the flow will be set in the switch using the instruction **(of.ofp_action_output(port = of.OFPP_ALL))**, finally with **event.connection.send(msg)** the flow is sent to the switch. This is necessary to get the reachability through all the 3 networks.
 * Then, I call a function called **add_ sameNetworkFlows(event, ip)**. Explanation below this code.
-* After setting all the flows inside the networks, it is time to set them between different LANs. I call twice the function add_flows, for instance for the S1 condition, the first call is to set the flows between S1 network (10.0.0.0) and the S2 network (11.0.0.0), and the second one is to set the flows between S1 network and S3 network. I also pass a third argument responsible to set the destination MAC addresses properly. Explanation below.
+* After setting all the flows inside the LANs, it is time to set them among different LANs. I call twice the function add_flows, for instance for the S1 condition, the first call is to set the flows between S1 network (10.0.0.0) and the S2 network (11.0.0.0), and the second one is to set the flow rules between S1 LAN and S3 LAN. I also pass a third argument responsible to set the destination MAC addresses properly. Explanation below.
 
 ```python
 def _handle_PacketIn (event):
@@ -286,12 +286,15 @@ def _handle_PacketIn (event):
 		add_flows(event,"12.0.0.","11.0.0.",1)
 ```
 #### add_sameNetworkFlows(ev,ipdst):
-This functions has 2 arguments, the first one the event and the second one the destination IP, what I do here is to **set the flows** in the respective switch in order to reach **the hosts** of the **same switch** or network. Since the switch port number matches the last byte of the IP destination, I used a for loop, specified the hard timeout and the IP code:0x0800.
+This function has 2 arguments, the first one is the event and the second one,the destination IP.
+
+It is responsible to **set the flows** in the respective switch in order to reach **the hosts** of the **same switch** or network. Since the switch port number matches the last byte of the IP destination, I used a **for loop**  and also specified the hard timeout and the IP code:0x0800.
 
 Example:
-* add_sameNetworkFlows(event,"10.0.0.")--> This is the root address of the switch1, called from the switch1 condition.
-* from 1 to 5 , I set the **myipdst** variable as a string concatenation between  the root address(10.0.0.) and the i number,don´t forget to assign it to the msg IP destination **msg.match.nw_dst** so it would fill the 5 IPs, 10.0.0.1 to the port 1, 10.0.0.2 to the port 2 ..... 10.0.0.5 to the port 5.
-* Finnally, the flow is installed in the switch with **ev.connection.send(msg)** 
+* add_sameNetworkFlows(event,"10.0.0.")--> This is the root address of the S1 LAN, called from the S1 condition.
+* from 1 to 5 , I set the **myipdst** variable as a string concatenation between the root address(10.0.0.) and the **"i"** number.
+* Don´t forget to assign it to the msg IP destination **msg.match.nw_dst** so it would fill the 5 IPs, 10.0.0.1 to the port 1, 10.0.0.2 to the port 2 ..... 10.0.0.5 to the port 5.
+* Finnally, the rule is installed in the switch with **ev.connection.send(msg)** 
 
 ```python
 def add_sameNetworkFlows(ev,ipdst):
@@ -305,7 +308,7 @@ def add_sameNetworkFlows(ev,ipdst):
 			ev.connection.send(msg)
 ```
 #### add_Flows(ev,ipsrc,ipdst,n):
-The functionailty of this block is to decide which port has to be set to reach another switch network. For instance if we want to add the flow rules to communicate from the LAN 10.0.0.0 to the LAN 11.0.0.0, the chosen port will be the s1-eth6, as this is the one connecting S1 and S2, and so on with all the LANs.
+The functionailty of this block is to decide which port has to be set to reach another switch LAN. For instance if we want to add the flow rules to communicate from the LAN 10.0.0.0 to the LAN 11.0.0.0, the chosen port will be the s1-eth6, as this is the one connecting S1 and S2 LANs, and so on with all the LANs.
 
 ```python
 def add_flows(ev,ipsrc,ipdst,n):
@@ -324,14 +327,14 @@ inport=0
 		inport=7
 ```
 
-Here I am using a for loop very similar to the one in the **add_sameNetworkFlows(ev,ipdst)** function. 
-* First difference: I am using the loop index and the "n" parameter to assign the IPs an the MAC addresses. If you remember the topology, the 4 most significant bits of the last byte of S1 hosts are **0**, for s2 **1**, for s3 **2**, e.g:
+Here I am using a **for loop** very similar to the one in the **add_sameNetworkFlows(ev,ipdst)** function. 
+* First difference: I am using the loop index and the "n" parameter to assign the IPs and the MAC addresses. If you remember the topology, the 4 most significant bits of the last byte of S1 hosts are **0**, for s2 **1** and for s3 **2**, e.g:
     * h1_s1--->"00:00:00:00:00:**0**1"
     * h1_s2--->"00:00:00:00:00:**1**1"
     * h5_s3--->"00:00:00:00:00:**2**5"
-  
-* Then I assign the IP bit exactly like in the function **add_sameNetworkFlows(ev,ipdst)**, h1_s1 ---> j=1, h4_s2 --->j=4 ...
-* **msg.actions.append(of.ofp_action_dl_addr.set_dst(EthAddr("00:00:00:00:00:"+str(n)+str(j))))** ---> I modify the destination MAC address in order to **be able to communicate among 3 LANs**, e.g, ipdst:11.0.0.3. Every time that a packet arrives having 11.0.0.3 as a destination IP, the MAC address destination will be **modified** by the one which is inside the function **set_dst**, in this case it would be "EthAddr("00:00:00:00:00:13)". This was the key for allowing me to implement correctly the 3 LANs requirement.
+* Then I assign the last IP byte(host number) exactly like in the function **add_sameNetworkFlows(ev,ipdst)**, h1_s1 ---> j=1, h4_s2 --->j=4 ...
+* **msg.actions.append(of.ofp_action_dl_addr.set_dst(EthAddr("00:00:00:00:00:"+str(n)+str(j))))** ---> I modify the destination MAC address in order to **be able to communicate among 3 LANs**, 
+* Example:**ipdst:11.0.0.3**. Every time that a packet arrives having 11.0.0.3 as a destination IP, the MAC address destination will be **modified** by the one which is inside the function **set_dst**, in this case it would be "EthAddr("00:00:00:00:00:13)". This was the key for allowing me to implement correctly the 3 LANs requirement.
 * Second difference: Here I do not use **of.ofp_action_output(port)**, instead I use **ofp_action_enqueue(port,queue_id)** in order to assign the rule to the 3 different output queues which I created previously.
     * If the destination host is the **host1** or **host2** ---> All the packets destined to h1 or h2 will go through the port chosen previously and through the **queue** id **1**.(1Mbit)
     * If the destination host is the **host3** or **host4** ---> All the packets destined to h3 or h4 will go through the port chosen previously and through the **queue** id **2**.(2Mbit)
@@ -361,7 +364,7 @@ ________________________________________________________________________________
 # Testing the project
 In this section, I am going to explain step by step how to test the project properly, checking that the requirements were met.
 ## Running the controller
-First you need to the place the controller in the directory "pox/ext", afterwards you need to go to "pox" directory and execute the following command.
+First you need to place the controller in the directory "pox/ext", afterwards you need to move to "pox" directory and execute the following command.
 
 <img src="images/runcontroller.png">
 
@@ -383,7 +386,7 @@ We can see that the link bandwitdh is 100MBps (third line) and following that, t
 * 2Mbit queue
 * 3Mbit queue
 
-The first one, despite it is necessarily created, it is not used in the project.
+The first one, although it is necessarily created, it is not used in the project.
 
 ## Pinging all
 In order to measure the reachability of the controller, I am going to run on the mininet CLI the command **pingall**.
@@ -397,14 +400,14 @@ After pinging, we can use the following command in another terminal to check the
 
 <img src="images/flows.png">
 
-As i explained before, there are **5 rules** for the hosts of the same switch or LAN, and **10 rules** for the other hosts from the other LANs , + **1** for the **ARP** protocol.
+As I explained before, there are **5 rules** for the hosts of the same switch or LAN, and **10 rules** for the other hosts from the other 2 LANs , + **1** for the **ARP** protocol.
 
 ## Measuring traffic
 One of the requirements of the project was to have a programmable bandwith for 3 output queues, it can be tested using the **iperf** command as the following image:
 
 <img src="images/traffic.png">
 
-It **doesn´t matter the source** of the packets but their **destination**. As long as the IP dst host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**.
+It **doesn´t matter the source** of the packets but their **destination**. As long as the IP destination host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**.
 
 ## Finishing the simulation and cleaning the environment
 Whenever a topology ends, we always need to run **sudo mn -c** to clean the environment and do not have conflicts for the next simulation.
@@ -412,7 +415,7 @@ Whenever a topology ends, we always need to run **sudo mn -c** to clean the envi
 <img src="images/finish.png">
 
 # BONUS: Dynamic routing considering same LAN
-As a bonus work, I also implemented a project that unlike the main project, this just uses 1 LAN and it sets the flows dynamically.
+As a bonus work, I also implemented a project that unlike the main project, this one just uses 1 LAN and it sets the flows dynamically.
 
 ```python
 def _handle_PacketIn (event):
@@ -424,7 +427,7 @@ def _handle_PacketIn (event):
 		
 ```
 
-This is the main difference from the main project, I analize the packet incoming, if it is an IPV4 packet, I get its source and destination IP address and then I just call the function add_flow, assigning these addreses to the msg, installing like this, **just 1** inter-switch rule in the respective switch.
+This is the main difference from the main project, I analize the packet incoming, if it is an IPV4 packet, I get its source and destination IP addresses and then I just call the function add_flow, assigning these addreses to the msg, installing like this, **just 1** inter-switch rule in the respective switch.
 ```python
 def add_flow(ev,ipsrc,ipdst):
 	inport=0
@@ -469,8 +472,8 @@ def add_flow(ev,ipsrc,ipdst):
 
 <img src="images/bonusflows.png">
 
-As you can see, beside the rules for same switch hosts and the ARP rule, there is just 1 rule created specifically for the hosts that were involved in the ping instruction.
+As you can see, beside the rules for the same switch hosts and the ARP rule, there is just 1 rule created specifically for the hosts that were involved in the ping instruction.
 
 ## Bonus summary
 
-In summary, this bonus project works in the same way than the main one(same bandwith management, same output queues...). The only difference is that all the switches are in the same LAN and the controller sets the flow rules dynamically, not in a row.
+In summary, this bonus project works the same way than the main one(same bandwith management, same output queues...). The only difference is that all the switches are in the same LAN and the controller sets the flow rules dynamically, not in a row.
