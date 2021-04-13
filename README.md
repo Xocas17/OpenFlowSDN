@@ -404,7 +404,12 @@ One of the requirements of the project was to have a programmable bandwith for 3
 
 <img src="images/traffic.png">
 
-It **doesn´t matter the source** of the packets but their **destination**. As long as the IP dst host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**
+It **doesn´t matter the source** of the packets but their **destination**. As long as the IP dst host ends in **1 or 2**, it will have a **1 Mbit bandwith**, if it ends in **3 or 4**, **2 Mbit bandwith** and if it ends in **5**, **3 Mbit bandwith**.
+
+## Finishing the simulation and cleaning the environment
+Whenever a topology ends, we always need to run **sudo mn -c** to clean the environment and do not have conflicts for the next simulation.
+
+<img src="images/finish.png">
 
 
 
