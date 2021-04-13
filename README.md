@@ -57,7 +57,7 @@ There is also a pattern concerning the MAC addresses---> The 4 least significant
 
 This is helpful to identify in a more simple way the corresponding MAC addresses.
 
-Finally, I added the 3 switches to the net and the controller.
+Finally, I added the 3 switches and the controller to the net variable.
 
 I also assigned a port(6633) and an IP address(127.0.0.1) to the remote controller.
 ```python
