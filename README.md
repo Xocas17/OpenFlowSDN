@@ -105,6 +105,10 @@ net.addLink(h2_s3, s3,port1=1,port2=2)
 net.addLink(h3_s3, s3,port1=1,port2=3)
 net.addLink(h4_s3, s3,port1=1,port2=4)
 net.addLink(h5_s3, s3,port1=1,port2=5)
+
+net.addLink(s1,s2,port1=6,port2=6)
+net.addLink(s2,s3,port1=7,port2=7)	
+net.addLink(s1,s3,port1=7,port2=6)
 ```
 ### 5.Starting the Mininet object and the Mininet CLI(Interface)
 Once the **exit** command is sent in the CLI, the net.stop() command will be executed, stopping the simulation.
